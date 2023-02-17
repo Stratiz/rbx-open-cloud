@@ -1,0 +1,13 @@
+{
+  "name": "rbx-open-cloud",
+  "version": "1.0.0",
+  "description": "OOP Wrapper for Roblox Open Cloud API",
+  "main": "./src/index.js",
+  "type": "module",
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stratiz",
+  "license": "MIT"
+}
