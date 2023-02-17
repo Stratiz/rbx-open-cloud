@@ -252,3 +252,56 @@ const newPlaceService = new PlaceService(1234567890, process.env.RBLX_API_KEY)
 <hr>
 
 # Examples
+
+(TypeScript)
+Update specific object entries without modifying the others, then inform the live game servers the object has been updated:
+```ts
+import CloudClient from "rbx-open-cloud"
+import type { JsonDataType } from "rbx-open-cloud"
+
+const robloxClient = new CloudClient(123456789, process.env.RBLX_API_KEY)
+
+const objectDataStore = robloxClient.dataStoreService.getDataStore("ObjectData")
+const serverInformer = robloxClient.messagingService.getTopic("InformServers")
+
+export function update(objectId : string, data : { [key : string] : JsonDataType }) {
+    return new Promise((resolve, reject) => {
+
+        // Fetch the data from roblox
+        objectDataStore.get(objectId)
+            .then((response) => {
+                // Explicitly define our data type
+                const responseData = response.data as { [key : string] : JsonDataType };
+
+                // Parse through data and update values that exist in both provided data and gotten data.
+                for (const key in data) {
+                    if (responseData[key] != undefined) {
+                        responseData[key] = data[key];
+                        console.log("Updated " + objectId + " : " + key + " to", data[key])
+                    }
+                }
+                
+                // Set the updated data
+                objectDataStore.set(objectId, responseData)
+                    .then(successData => {
+                        // If successful, fire an message to inform servers of the update.
+                        serverInformer.publish(objectId)
+                            .catch(err => {
+                                console.log(err);
+                            });
+                        
+                        // Resolve with the set data response
+                        resolve(successData);
+                    })
+                    .catch(err => {
+                        console.log("Failed to set updated data:", err);
+                        reject(err);
+                    });
+            })
+            .catch(err => {
+                console.log("Failed to get data:", err);
+                reject(err);
+            });
+    });
+}
+```
