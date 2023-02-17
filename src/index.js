@@ -1,8 +1,8 @@
 //@ts-check
 
-import DataStoreService from './services/dataStoreService';
-import MessagingService from './services/messagingService';
-import PlaceService from './services/placeService';
+import DataStoreService from './services/dataStoreService.js';
+import MessagingService from './services/messagingService.js';
+import PlaceService from './services/placeService.js';
 
 export { DataStoreService, MessagingService, PlaceService };
 
