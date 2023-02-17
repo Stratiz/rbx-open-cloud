@@ -31,7 +31,7 @@ class MessagingTopic {
     publish(data) { 
         /** @type {Promise<void>} */
         return (new Promise((resolve, reject) => {
-            fetch(this.#baseUrl + `/topicNames/${this.topicName}`, {
+            fetch(this.#baseUrl + `/topics/${this.topicName}`, {
                 method: "POST",
                 headers: {
                     "x-api-key": this.#apiKey,
