@@ -111,7 +111,7 @@ class DataStore {
         this.params = params;
     }
     
-    list(params={}) {
+    listKeys(params={}) {
         return new Promise((resolve, reject) => {
             fetch(this.#baseUrl + "/datastore/entries" +  makeUrlParamsFromObject({
                 datastoreName : this.name,

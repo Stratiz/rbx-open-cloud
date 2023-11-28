@@ -6,109 +6,6 @@ The goal of this project is to simplify the Open Cloud API into a familar format
 Contributions are much welcome!
 
 # Docs
-## Types Reference
-Click below to see a lean version of all the typings and return values.
-
-Full type file is also located [here.](./src/index.d.ts)
-<details>
-<summary> Expand Types </summary>
-
-```ts
-// General types
-export type JsonDataType = string | number | boolean | {[key : string] : JsonDataType} | JsonDataType[] | null;
-
-/* 
-    DataStoreService
-*/
-
-// Params
-interface DataStoreParams {
-    scope? : string
-}
-
-interface EntryMetaData {
-    "roblox-entry-attributes"? : JsonDataType,
-    "roblox-entry-userids"? : number[],
-}
-
-interface ListEntriesParams extends DataStoreParams {
-    prefix? : string,
-    pageSize? : number,
-    cursor? : string
-    limit? : number
-    allScopes? : boolean
-}
-
-interface SetDataParams extends EntryMetaData { 
-    matchVersion? : string,
-    exclusiveCreate? : boolean,
-}
-
-interface ListVersionsParams { 
-    cursor? : string,
-    startTime? : Date,
-    endTime? : Date,
-    sortOrder? : "Ascending" | "Descending",
-    limit? : number,
-}
-
-interface ListDataStoresParams {
-    prefix? : string,
-    pageSize? : number,
-    cursor? : string
-}
-
-// Responses
-export type GetDataResponse = {
-    data : JsonDataType | undefined,
-    metaData: {
-        "roblox-entry-created-time" : Date,
-        "last-modified"? : Date,
-        "roblox-entry-version" : string,
-        "roblox-entry-attributes"? : JsonDataType,
-        "roblox-entry-userids" : number[],
-        "content-md5" : string,
-    }
-}
-
-export type ListDataStoresResponse = {
-    datastores : {name : string, createdTime : string}[],
-    nextPageCursor : string
-}
-
-export type SetDataResponse = {
-    version : string,
-    deleted : boolean,
-    contentLength : number,
-    createdTime : Date,
-    objectCreatedTime : Date
-}
-
-export type ListVersionsResponse = {
-    versions : SetDataResponse[]
-}
-
-export type ListEntriesResponse = {
-    keys : {key : string}[], nextPageCursor : string
-}
-
-export interface GetDataVersionResponse {
-    "roblox-entry-attributes" : JsonDataType,
-    "roblox-entry-userids" : number[],
-    "last-modified" : Date,
-}
-
-/* 
-    PlaceService
-*/
-
-// Responses
-export type PlacePublishResponse = {
-    versionNumber : number
-}
-```
-</details>
-<br>
 
 ## Classes
 ### `class CloudClient(universeId: number, apiKey: string)`
@@ -116,13 +13,17 @@ export type PlacePublishResponse = {
 ```js
 import CloudClient from "rbx-open-cloud"
 
-const client = new CloudClient(1234567890, process.env.RBLX_API_KEY)
+const client = new CloudClient(process.env.RBLX_API_KEY)
 ```
-#### Properties:
-  - dataStoreService: `DataStoreService`
-  - messagingService: `MessagingService`
-  - placeService: `PlaceService`
-  - universeId: `number`
+#### Methods:
+  - registerService(serviceName : `string`, `...args`) : `Service`
+    ```js
+    const messagingService = client.registerService("MessagingService", 1234567890)
+    ```
+  - getService(serviceName : `string`) : `Service`;
+    ```js
+    const messagingService = client.getService("MessagingService")
+    ```
 
 <hr>
 
@@ -156,7 +57,7 @@ const newDataService = new DataStoreService(1234567890, process.env.RBLX_API_KEY
   - universeId: `number`
 
 #### Methods:
-- list(params? : `ListEntriesParams`) : `Promise<ListEntriesResponse>`;
+- listKeys(params? : `ListEntriesParams`) : `Promise<ListEntriesResponse>`;
 
 - get(key : `string`) : `Promise<GetDataResponse>`;
 - set(key : `string`, value : `JsonDataType`, params? : `SetDataParams`) : `Promise<SetDataResponse>`;
@@ -251,57 +152,54 @@ const newPlaceService = new PlaceService(1234567890, process.env.RBLX_API_KEY)
     ```
 <hr>
 
-# Examples
+### `class AssetService(creatorId: number, isGroup: boolean, apiKey: string)`
 
-(TypeScript)
-Update specific object entries without modifying the others, then inform the live game servers the object has been updated:
-```ts
-import CloudClient from "rbx-open-cloud"
-import type { JsonDataType } from "rbx-open-cloud"
+```js
+import { AssetService } from "rbx-open-cloud"
 
-const robloxClient = new CloudClient(123456789, process.env.RBLX_API_KEY)
-
-const objectDataStore = robloxClient.dataStoreService.getDataStore("ObjectData")
-const serverInformer = robloxClient.messagingService.getTopic("InformServers")
-
-export function update(objectId : string, data : { [key : string] : JsonDataType }) {
-    return new Promise((resolve, reject) => {
-
-        // Fetch the data from roblox
-        objectDataStore.get(objectId)
-            .then((response) => {
-                // Explicitly define our data type
-                const responseData = response.data as { [key : string] : JsonDataType };
-
-                // Parse through data and update values that exist in both provided data and gotten data.
-                for (const key in data) {
-                    if (responseData[key] != undefined) {
-                        responseData[key] = data[key];
-                        console.log("Updated " + objectId + " : " + key + " to", data[key])
-                    }
-                }
-                
-                // Set the updated data
-                objectDataStore.set(objectId, responseData)
-                    .then(successData => {
-                        // If successful, fire an message to inform servers of the update.
-                        serverInformer.publish(objectId)
-                            .catch(err => {
-                                console.log(err);
-                            });
-                        
-                        // Resolve with the set data response
-                        resolve(successData);
-                    })
-                    .catch(err => {
-                        console.log("Failed to set updated data:", err);
-                        reject(err);
-                    });
-            })
-            .catch(err => {
-                console.log("Failed to get data:", err);
-                reject(err);
-            });
-    });
-}
+const newAssetService = new AssetService(1234567890, false, process.env.RBLX_API_KEY)
 ```
+
+#### Properties:
+  - baseUrl: `string`
+  - ownerId: `number`
+  - isGroup: `boolean`
+
+#### Methods:
+  - create(assetType, name, fileContent, options) : `Promise<AssetCreateResponse>`
+    - assetType : `"Audio" | "Decal" | "Model"`
+    - name : `string`
+    - fileContent : `Blob`
+    - options : `{ description : string }`
+  
+    ```js
+    const assetPromise = newAssetService.create("Audio", "NewAudio!", FileBlob, { description: "Cool new asset" })
+
+    // Response used in .get()
+    ```
+
+  - get(operationIdPath : `string`) : `Promise<AssetGetResponse>`
+
+    ```js
+      assetPromise.then((uploadResult) => {
+          let getResult = undefined;
+          while (!getResult || !getResult.response) { // Roblox backend has a race condition. This is a hacky fix.
+              await new Promise(r => setTimeout(r, 1000));
+              getResult = await newAssetService.get(uploadResult.path)
+
+              const unusualResult = (getResult as unknown) as {[key : string] : string};
+              if (unusualResult.error) {
+                  throw new Error(unusualResult.error);
+              }
+          }
+
+          console.log(getResult.response.assetId);
+      }).catch((err) => {
+          console.log("Upload failed")
+      });
+    ```
+
+  - update(assetId : `number`, fileContent : `Blob`) : `Promise<AssetCreateResponse>`
+    ```js
+    const assetPromise = newAssetService.update(0123456789, FileBlob)
+    ```

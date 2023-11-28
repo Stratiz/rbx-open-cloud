@@ -3,21 +3,35 @@
 import DataStoreService from './services/dataStoreService.js';
 import MessagingService from './services/messagingService.js';
 import PlaceService from './services/placeService.js';
+import AssetService from './services/assetService.js';
 
-export { DataStoreService, MessagingService, PlaceService };
+const services = { DataStoreService, MessagingService, PlaceService, AssetService };
+export { DataStoreService, MessagingService, PlaceService, AssetService };
 
 export default class CloudClient {
-    universeId;
-    dataStoreService;
-    messagingService;
-    placeService;
     #apiKey;
+    #serviceCache = {};
 
-    constructor(universeId, apiKey) {
-        this.universeId = universeId;
+    constructor(apiKey) {
         this.#apiKey = apiKey;
-        this.dataStoreService = new DataStoreService(this.universeId, this.#apiKey);
-        this.messagingService = new MessagingService(this.universeId, this.#apiKey);
-        this.placeService = new PlaceService(this.universeId, this.#apiKey);
+    }
+
+    registerService(serviceName, ...args) {
+        if (!services[serviceName]) {
+            throw new Error(`Service ${serviceName} does not exist.`);
+        }
+
+        const service = new services[serviceName](...args, this.#apiKey);
+        this.#serviceCache[serviceName] = service;
+
+        return service;
+    }
+
+    getService(serviceName) {
+        if (this.#serviceCache[serviceName]) {
+            return this.#serviceCache[serviceName];
+        } else {
+            throw new Error(`Service ${serviceName} is not registered.`);
+        }
     }
 }

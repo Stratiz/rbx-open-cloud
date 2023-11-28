@@ -1,16 +1,14 @@
 
 // General types
 export type JsonDataType = string | number | boolean | {[key : string] : JsonDataType} | JsonDataType[] | null;
+type Service = DataStoreService | MessagingService | PlaceService | AssetService
 
 // Default class
 export default class CloudClient {
-    constructor(universeId : number, apiKey : string);
+    constructor(apiKey : string);
 
-    universeId : number;
-
-    dataStoreService : DataStoreService;
-    messagingService : MessagingService;
-    placeService : PlaceService;
+    registerService : (serviceName : string, ...args) => Service;
+    getService : (serviceName : string) => Service;
 }
 
 /* 
@@ -98,7 +96,7 @@ export class DataStore {
     name : string;
     universeId : number;
 
-    list(params? : ListEntriesParams) : Promise<ListEntriesResponse>;
+    listKeys(params? : ListEntriesParams) : Promise<ListEntriesResponse>;
     get(key : string) : Promise<GetDataResponse>;
     set(key : string, value : JsonDataType, params? : SetDataParams) : Promise<SetDataResponse>;
     delete(key : string) : Promise<void>;
@@ -161,4 +159,56 @@ export class PlaceService {
     constructor(universeId : number, apiKey : string);
 
     getPlace(placeId : number) : Place;
+}
+
+/*
+    AssetService
+*/
+// Responses
+interface AssetCreateResponse {
+    path : string,
+    metadata : string,
+    done : boolean,
+    error : {
+        code : number,
+        message : string
+        details : string[]
+    }
+}
+
+interface AssetGetResponse {
+    path : string,
+    done : boolean,
+    response : {
+        "@type" : string,
+        assetType : string,
+        assetId : string,
+        creationContext : {
+            expectedPrice? : number,
+            creator : {
+                userId? : number,
+                groupId? : number
+            }
+        }
+        description : string,
+        displayName : string,
+        path : string,
+        revisionId : string,
+        revisionCreateTime : string
+    }
+    
+}
+// Classes
+export class AssetService {
+    ownerId : number;
+    isGroup : boolean;
+    baseUrl : string;
+
+    constructor(creatorId : number, isGroup : boolean, apiKey : string);
+
+    create(assetType : "Audio" | "Decal" | "Model", name : string, fileContent : Blob, options? : {description? : string} ) : Promise<AssetCreateResponse>;
+
+    update(assetId : number, fileContent : Blob) : Promise<AssetCreateResponse>;
+
+    get(operationIdPath : string) : Promise<AssetGetResponse>;
 }
