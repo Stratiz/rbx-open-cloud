@@ -212,3 +212,106 @@ export class AssetService {
 
     get(operationIdPath : string) : Promise<AssetGetResponse>;
 }
+
+/*
+    
+    GroupService
+
+*/
+// Responses
+interface GroupInfoResponse {
+    path: String,
+    createTime: String,
+    updateTime: String,
+    id: String,
+    displayName: String,
+    description: String,
+    owner: String,
+    memberCount: Number,
+    publicEntryAllowed: Boolean,
+    locked: Boolean,
+    verified: Boolean
+}
+
+interface GroupMemberResponse {
+    groupMemberships: [
+      {
+        path: String,
+        createTime: String,
+        updateTime: String,
+        user: String,
+        role: String
+      }
+    ],
+    nextPageToken: String
+}
+interface GroupRolesResponse {
+    groupRoles: [
+      {
+        path: String,
+        createTime: String,
+        updateTime: String,
+        id: String,
+        displayName: String,
+        description: String,
+        rank: Number,
+        memberCount: Number,
+        permissions: {
+          viewWallPosts: Boolean,
+          createWallPosts: Boolean,
+          deleteWallPosts: Boolean,
+          viewGroupShout: Boolean,
+          createGroupShout: Boolean,
+          changeRank: Boolean,
+          acceptRequests: Boolean,
+          exileMembers: Boolean,
+          manageRelationships: Boolean,
+          viewAuditLog: Boolean,
+          spendGroupFunds: Boolean,
+          advertiseGroup: Boolean,
+          createAvatarItems: Boolean,
+          manageAvatarItems: Boolean,
+          manageGroupUniverses: Boolean,
+          viewUniverseAnalytics: Boolean,
+          createApiKeys: Boolean,
+          manageApiKeys: Boolean
+        }
+      }
+    ],
+    nextPageToken: String
+}
+
+interface GroupShoutResponse {
+    path: String,
+    createTime: String,
+    updateTime: String,
+    content: String,
+    poster: String
+}
+
+// Params
+
+interface GroupMemberParams {
+    pageToken? : string,
+    filter? : string
+}
+
+interface GroupRolesParams {
+    pageToken? : string
+}
+
+// Classes
+export class GroupService {
+    groupId : number;
+    baseUrl : string;
+
+    constructor(groupId : number, apiKey : string);
+
+    getInfo() : Promise<GroupInfoResponse>;
+
+    getMembers(amount : number, params : GroupMemberParams) : Promise<GroupMemberResponse>;
+
+    getRoles(amount : number, params : GroupRolesParams) : Promise<GroupRolesResponse>;
+
+    getShout() : Promise<GroupShoutResponse>;
+}

@@ -4,9 +4,10 @@ import DataStoreService from './services/dataStoreService.js';
 import MessagingService from './services/messagingService.js';
 import PlaceService from './services/placeService.js';
 import AssetService from './services/assetService.js';
+import GroupService from './services/groupService.js';
 
-const services = { DataStoreService, MessagingService, PlaceService, AssetService };
-export { DataStoreService, MessagingService, PlaceService, AssetService };
+const services = { DataStoreService, MessagingService, PlaceService, AssetService, GroupService };
+export { DataStoreService, MessagingService, PlaceService, AssetService, GroupService };
 
 export default class CloudClient {
     #apiKey;

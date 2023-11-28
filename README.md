@@ -203,3 +203,21 @@ const newAssetService = new AssetService(1234567890, false, process.env.RBLX_API
     ```js
     const assetPromise = newAssetService.update(0123456789, FileBlob)
     ```
+
+### `class GroupService(groupId: number, apiKey: string)`
+
+```js
+import { GroupService } from "rbx-open-cloud"
+
+const newGroupService = new GroupService(1234567890, process.env.RBLX_API_KEY)
+```
+
+#### Properties:
+  - baseUrl: `string`
+  - groupId: `number`
+
+#### Methods:
+  - getInfo() : `Promise<GroupInfoResponse>`
+  - getMembers(amount : number, params : `GroupMemberParams` ) : `Promise<GroupMembersResponse>`
+  - getRoles(amount : number, params : `GroupRolesParams`) : `Promise<GroupRolesResponse>`
+  - getShout() : `Promise<GroupShoutResponse>`
