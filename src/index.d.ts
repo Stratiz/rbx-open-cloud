@@ -141,7 +141,7 @@ export class MessagingService {
 */
 // Responses
 export type PlacePublishResponse = {
-    versionNumber : number
+    versionnumber : number
 }
 
 // Classes
@@ -220,73 +220,73 @@ export class AssetService {
 */
 // Responses
 interface GroupInfoResponse {
-    path: String,
-    createTime: String,
-    updateTime: String,
-    id: String,
-    displayName: String,
-    description: String,
-    owner: String,
-    memberCount: Number,
-    publicEntryAllowed: Boolean,
-    locked: Boolean,
-    verified: Boolean
+    path: string,
+    createTime: string,
+    updateTime: string,
+    id: string,
+    displayName: string,
+    description: string,
+    owner: string,
+    memberCount: number,
+    publicEntryAllowed: boolean,
+    locked: boolean,
+    verified: boolean
 }
 
 interface GroupMemberResponse {
     groupMemberships: [
       {
-        path: String,
-        createTime: String,
-        updateTime: String,
-        user: String,
-        role: String
+        path: string,
+        createTime: string,
+        updateTime: string,
+        user: string,
+        role: string
       }
     ],
-    nextPageToken: String
+    nextPageToken: string
 }
 interface GroupRolesResponse {
     groupRoles: [
       {
-        path: String,
-        createTime: String,
-        updateTime: String,
-        id: String,
-        displayName: String,
-        description: String,
-        rank: Number,
-        memberCount: Number,
+        path: string,
+        createTime: string,
+        updateTime: string,
+        id: string,
+        displayName: string,
+        description: string,
+        rank: number,
+        memberCount: number,
         permissions: {
-          viewWallPosts: Boolean,
-          createWallPosts: Boolean,
-          deleteWallPosts: Boolean,
-          viewGroupShout: Boolean,
-          createGroupShout: Boolean,
-          changeRank: Boolean,
-          acceptRequests: Boolean,
-          exileMembers: Boolean,
-          manageRelationships: Boolean,
-          viewAuditLog: Boolean,
-          spendGroupFunds: Boolean,
-          advertiseGroup: Boolean,
-          createAvatarItems: Boolean,
-          manageAvatarItems: Boolean,
-          manageGroupUniverses: Boolean,
-          viewUniverseAnalytics: Boolean,
-          createApiKeys: Boolean,
-          manageApiKeys: Boolean
+          viewWallPosts: boolean,
+          createWallPosts: boolean,
+          deleteWallPosts: boolean,
+          viewGroupShout: boolean,
+          createGroupShout: boolean,
+          changeRank: boolean,
+          acceptRequests: boolean,
+          exileMembers: boolean,
+          manageRelationships: boolean,
+          viewAuditLog: boolean,
+          spendGroupFunds: boolean,
+          advertiseGroup: boolean,
+          createAvatarItems: boolean,
+          manageAvatarItems: boolean,
+          manageGroupUniverses: boolean,
+          viewUniverseAnalytics: boolean,
+          createApiKeys: boolean,
+          manageApiKeys: boolean
         }
       }
     ],
-    nextPageToken: String
+    nextPageToken: string
 }
 
 interface GroupShoutResponse {
-    path: String,
-    createTime: String,
-    updateTime: String,
-    content: String,
-    poster: String
+    path: string,
+    createTime: string,
+    updateTime: string,
+    content: string,
+    poster: string
 }
 
 // Params
@@ -309,9 +309,9 @@ export class GroupService {
 
     getInfo() : Promise<GroupInfoResponse>;
 
-    getMembers(amount : number, params : GroupMemberParams) : Promise<GroupMemberResponse>;
+    getMembers(amount : number, params? : GroupMemberParams) : Promise<GroupMemberResponse>;
 
-    getRoles(amount : number, params : GroupRolesParams) : Promise<GroupRolesResponse>;
+    getRoles(amount : number, params? : GroupRolesParams) : Promise<GroupRolesResponse>;
 
     getShout() : Promise<GroupShoutResponse>;
 }
